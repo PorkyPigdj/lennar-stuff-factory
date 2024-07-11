@@ -1,0 +1,45 @@
+services:
+
+  backend:
+    restart: always
+    container_name: stuff_factory_backend
+    hostname: stufffactorybackend  # underscore make it invalid (RFC 1034/1035)
+    build:
+      context: ./
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - "./logs:/code/logs"
+      - "./media:/code/media"
+    env_file:
+      - .env
+    expose:
+      - "${API_SERVE_PORT}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  caddy:
+    container_name: stuff_factory_caddy
+    hostname: stuff_factory_caddy
+    restart: unless-stopped
+    build:
+      context: ./deploy/caddy
+    volumes:
+      - ./data/caddy_data:/data
+      - ./data/caddy_config:/config
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"

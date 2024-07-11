@@ -1,0 +1,5 @@
+{$BASE_URL_SCHEME}://{$BASE_URL_NETLOC} {
+  handle {
+    reverse_proxy {$BACKEND_SERVER_HOST}:{$API_SERVE_PORT}
+  }
+}
